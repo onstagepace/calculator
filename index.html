@@ -10,9 +10,8 @@
     --text: #1b1b1b;
     --muted: #6b7280;
     --accent: #4f46e5;
-    --accent2: #22c55e;
-    --danger: #ef4444;
     --ok: #16a34a;
+    --danger: #ef4444;
     --border: #e5e7eb;
     --shadow: 0 10px 24px rgba(0,0,0,0.12);
   }
@@ -24,7 +23,7 @@
     color: var(--text);
     display:flex;
     justify-content:center;
-    padding: 20px;
+    padding: 80px 20px 20px 20px; /* 상단 여백 80px */
     background: transparent;
   }
 
@@ -67,23 +66,9 @@
     margin-bottom: 6px;
   }
 
-  /* 입력칸 아이콘 넣기 */
-  .input-group {
-    position: relative;
-  }
-
-  .input-group .icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-    color: var(--muted);
-  }
-
   input, select {
     width:100%;
-    padding: 10px 12px 10px 36px; /* 왼쪽 패딩 증가 */
+    padding: 10px 12px;
     border-radius: 10px;
     border: 1px solid var(--border);
     background: #f9fafb;
@@ -132,6 +117,7 @@
     font-size: 26px;
     font-weight: 800;
     margin: 0;
+    color: #111827;
   }
 
   .badge {
@@ -147,23 +133,18 @@
   .badge.ok { color: var(--ok); border-color: rgba(22,163,74,0.35); }
   .badge.fail { color: var(--danger); border-color: rgba(239,68,68,0.35); }
 
-  /* 애니메이션 */
-  @keyframes pop {
-    0% { transform: scale(0.95); opacity: 0.6; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
-  }
-  .badge.ok { animation: pop .35s ease-out; }
-  .badge.fail { animation: shake .35s ease-out; }
-
-  /* 과락 원인 강조 */
   .warn {
     color: var(--danger);
     font-weight: 700;
+  }
+
+  /* 급수 표시를 결과 하단으로 이동 */
+  .gradeLine {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
   }
 </style>
 </head>
@@ -173,34 +154,24 @@
       <h1>무대예술전문인 자격검정 점수 계산기</h1>
       <p class="subtitle">등급 선택 후 공통/전공 정답 수를 입력하면 합격 여부를 자동 계산합니다.</p>
 
-      <!-- 1열 입력 -->
       <div class="row">
         <div>
           <label>등급</label>
-          <div class="input-group">
-            <span class="icon">🎖</span>
-            <select id="grade">
-              <option value="1">1급</option>
-              <option value="2">2급</option>
-              <option value="3">3급</option>
-            </select>
-          </div>
+          <select id="grade">
+            <option value="1">1급</option>
+            <option value="2">2급</option>
+            <option value="3">3급</option>
+          </select>
         </div>
 
         <div>
           <label>공통 정답 수 (0~60)</label>
-          <div class="input-group">
-            <span class="icon">📘</span>
-            <input type="number" id="common" min="0" max="60" value="0">
-          </div>
+          <input type="number" id="common" min="0" max="60" value="0">
         </div>
 
         <div>
           <label>전공 정답 수 (0~40)</label>
-          <div class="input-group">
-            <span class="icon">🎭</span>
-            <input type="number" id="major" min="0" max="40" value="0">
-          </div>
+          <input type="number" id="major" min="0" max="40" value="0">
         </div>
 
         <div>
@@ -211,22 +182,20 @@
       <div class="result" id="resultBox">
         <h2>결과</h2>
         <p id="summary">아래 버튼을 눌러 점수를 계산하세요.</p>
+
         <p>
           <strong>총점:</strong> 
           <span class="score" id="totalScore">0</span> 
           <span class="badge" id="statusBadge">-</span>
-          <span class="badge" id="gradeBadge">-</span>
         </p>
-        <p>
-          <strong>공통 점수:</strong> 
-          <span id="commonScore">0</span> / <span id="commonMax">0</span> 
-          (과락: <span id="commonFail">0</span>)
-        </p>
-        <p>
-          <strong>전공 점수:</strong> 
-          <span id="majorScore">0</span> / <span id="majorMax">0</span> 
-          (과락: <span id="majorFail">0</span>)
-        </p>
+
+        <p><strong>공통 점수:</strong> <span id="commonScore">0</span> / <span id="commonMax">0</span> (과락: <span id="commonFail">0</span>)</p>
+        <p><strong>전공 점수:</strong> <span id="majorScore">0</span> / <span id="majorMax">0</span> (과락: <span id="majorFail">0</span>)</p>
+
+        <!-- 급수 표시를 아래로 이동 -->
+        <div class="gradeLine">
+          <strong>선택한 등급:</strong> <span id="gradeBadge">-</span>
+        </div>
       </div>
     </div>
   </div>
@@ -285,9 +254,8 @@ function calc() {
   const gradeBadge = document.getElementById('gradeBadge');
   gradeBadge.innerText = data.label;
 }
+
 document.getElementById('calcBtn').addEventListener('click', calc);
 </script>
 </body>
 </html>
-
-
