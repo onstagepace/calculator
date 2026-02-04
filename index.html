@@ -15,6 +15,7 @@
     --border: #e5e7eb;
     --shadow: 0 10px 24px rgba(0,0,0,0.12);
     --pink: #ffd7e8; /* 우유핑크 */
+    --burgundy: #6b0b1c; /* 버건디 */
   }
 
   * { box-sizing: border-box; }
@@ -146,6 +147,7 @@
     font-size: 30px;
     font-weight: 900;
     margin: 0;
+    color: #ffd7e8; /* 총점 우유핑크 */
   }
 
   .badge {
@@ -190,8 +192,8 @@
     margin-top: 14px;
     font-size: 13px;
     font-weight: 700;
-    color: #000;
-    white-space: nowrap; /* 줄바꿈 방지 */
+    color: var(--burgundy); /* 버건디 */
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -280,11 +282,11 @@ function validateInputs() {
   const commonCorrect = Number(commonInput.value);
   const majorCorrect = Number(majorInput.value);
 
-  const isCommonValid = commonCorrect >= 0 && commonCorrect <= 60;
-  const isMajorValid = majorCorrect >= 0 && majorCorrect <= 40;
+  const isCommonValid = !isNaN(commonCorrect) && commonCorrect >= 0 && commonCorrect <= 60;
+  const isMajorValid = !isNaN(majorCorrect) && majorCorrect >= 0 && majorCorrect <= 40;
 
   if (!isCommonValid || !isMajorValid) {
-    summary.innerHTML = "<span class='warn'>입력값이 범위를 벗어났습니다. 다시 입력해주세요.</span>";
+    summary.innerHTML = "<span class='warn'>입력값이 범위를 벗어났거나 비어 있습니다.</span>";
     calcBtn.disabled = true;
     document.getElementById('resultBox').classList.remove('result--active');
     return false;
@@ -297,7 +299,6 @@ function validateInputs() {
 function calc() {
   if (!validateInputs()) return;
 
-  // 결과창 표시
   document.getElementById('resultBox').classList.add('result--active');
 
   const grade = document.getElementById('grade').value;
@@ -329,13 +330,17 @@ function calc() {
     passBadge.innerText = "합격";
     passBadge.className = "badge ok";
   } else {
+    if (isCommonFail || isMajorFail) {
+      passBadge.innerText = "과락";
+    } else {
+      passBadge.innerText = "불합격";
+    }
+    passBadge.className = "badge fail";
+
     if (!isTotalPass) summary.innerHTML = "<span class='warn'>총점이 60점 미만입니다.</span>";
     else if (isCommonFail) summary.innerHTML = "<span class='pinkText'>공통 과락입니다.</span>";
     else if (isMajorFail) summary.innerHTML = "<span class='warn'>전공 과락입니다.</span>";
     else summary.innerHTML = "불합격입니다.";
-
-    passBadge.innerText = "불합격";
-    passBadge.className = "badge fail";
   }
 
   const gradeBadge = document.getElementById('gradeBadge');
@@ -348,7 +353,6 @@ document.getElementById('grade').addEventListener('change', validateInputs);
 
 calcBtn.addEventListener('click', calc);
 
-// 초기 상태
 validateInputs();
 </script>
 </body>
