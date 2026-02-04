@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>간단 계산기</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input { width: 80px; }
+  </style>
+</head>
+<body>
+
+<h3>덧셈 계산기</h3>
+
+<input id="a" type="number"> +
+<input id="b" type="number">
+<button onclick="calc()">=</button>
+<span id="result"></span>
+
+<script>
+function calc() {
+  const a = Number(document.getElementById('a').value);
+  const b = Number(document.getElementById('b').value);
+  document.getElementById('result').innerText = a + b;
+}
+</script>
+
+</body>
+</html>
