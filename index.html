@@ -204,8 +204,9 @@
     <div class="card">
       <h1>무대예술전문인 자격검정 점수 계산기</h1>
       <p class="subtitle">
+        그동안 수고 많이 하셨습니다.<br>
         등급을 선택하고 과목별 정답 수를 입력 후<br>
-        결과확인을 눌러 합격 여부를 확인해보세요.
+        결과 확인을 눌러 합격 여부를 확인해 보세요.
       </p>
 
       <div class="row">
@@ -326,7 +327,7 @@ function calc() {
   document.getElementById('majorFail').innerText = data.majorFail;
 
   if (isPass) {
-    summary.innerHTML = "<span class='pinkText'>축하합니다!</span> <strong>합격</strong> 기준을 충족했습니다.";
+    summary.innerHTML = "<span class='pinkText'>축하합니다!</span>";
     passBadge.innerText = "합격";
     passBadge.className = "badge ok";
   } else {
