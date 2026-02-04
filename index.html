@@ -6,14 +6,17 @@
 <title>무대예술전문인 자격검정 점수 계산기</title>
 <style>
   :root {
-    --card-bg: #111a33;
-    --text: #e8ecff;
-    --muted: #aab2d8;
-    --accent: #7c5cff;
-    --accent2: #22d3ee;
-    --danger: #ff5c7a;
-    --ok: #38ef7d;
+    --card-bg: #ffffff;
+    --text: #1b1b1b;
+    --muted: #6b7280;
+    --accent: #4f46e5;
+    --accent2: #22c55e;
+    --danger: #ef4444;
+    --ok: #16a34a;
+    --border: #e5e7eb;
+    --shadow: 0 10px 24px rgba(0,0,0,0.12);
   }
+
   * { box-sizing: border-box; }
   body {
     margin:0;
@@ -22,29 +25,34 @@
     display:flex;
     justify-content:center;
     padding: 20px;
-    background: transparent; /* 배경 제거 */
+    background: transparent;
   }
+
   .wrap {
     width: 100%;
     max-width: 520px;
   }
+
   .card {
     background: var(--card-bg);
     border-radius: 18px;
     padding: 22px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
   }
+
   h1 {
     margin: 0 0 8px;
     font-size: 20px;
     letter-spacing: -0.3px;
   }
+
   .subtitle {
     margin: 0 0 14px;
     color: var(--muted);
     font-size: 13px;
   }
 
-  /* 1열 레이아웃 */
   .row {
     display:flex;
     flex-direction: column;
@@ -58,52 +66,74 @@
     color: var(--muted);
     margin-bottom: 6px;
   }
+
+  /* 입력칸 아이콘 넣기 */
+  .input-group {
+    position: relative;
+  }
+
+  .input-group .icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--muted);
+  }
+
   input, select {
     width:100%;
-    padding: 10px 12px;
+    padding: 10px 12px 10px 36px; /* 왼쪽 패딩 증가 */
     border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    background: #f9fafb;
     color: var(--text);
     outline:none;
   }
+
   input:focus, select:focus {
-    border-color: var(--accent2);
-    box-shadow: 0 0 0 3px rgba(34,211,238,0.22);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.18);
   }
+
   button {
     width:100%;
     padding: 12px;
     border: none;
     border-radius: 12px;
-    color: var(--text);
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), #22c55e);
     font-weight: 700;
     cursor:pointer;
     transition: transform .15s ease;
   }
   button:hover { transform: translateY(-1px); }
+
   .result {
     margin-top: 16px;
     padding: 16px;
     border-radius: 14px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: #f3f4f6;
+    border: 1px solid var(--border);
   }
+
   .result h2 {
     margin:0 0 8px;
     font-size: 16px;
   }
+
   .result p {
     margin: 6px 0;
     color: var(--muted);
     font-size: 14px;
   }
+
   .score {
     font-size: 26px;
     font-weight: 800;
     margin: 0;
   }
+
   .badge {
     display:inline-block;
     margin-left: 8px;
@@ -111,13 +141,153 @@
     border-radius: 999px;
     font-size: 12px;
     font-weight: 700;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: #fff;
+    border: 1px solid var(--border);
   }
-  .badge.ok { color: var(--ok); border-color: rgba(56,239,125,0.35); }
-  .badge.fail { color: var(--danger); border-color: rgba(255,92,122,0.35); }
+  .badge.ok { color: var(--ok); border-color: rgba(22,163,74,0.35); }
+  .badge.fail { color: var(--danger); border-color: rgba(239,68,68,0.35); }
+
+  /* 애니메이션 */
+  @keyframes pop {
+    0% { transform: scale(0.95); opacity: 0.6; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  .badge.ok { animation: pop .35s ease-out; }
+  .badge.fail { animation: shake .35s ease-out; }
+
+  /* 과락 원인 강조 */
+  .warn {
+    color: var(--danger);
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
-  <div class="wr
+  <div class="wrap">
+    <div class="card">
+      <h1>무대예술전문인 자격검정 점수 계산기</h1>
+      <p class="subtitle">등급 선택 후 공통/전공 정답 수를 입력하면 합격 여부를 자동 계산합니다.</p>
+
+      <!-- 1열 입력 -->
+      <div class="row">
+        <div>
+          <label>등급</label>
+          <div class="input-group">
+            <span class="icon">🎖</span>
+            <select id="grade">
+              <option value="1">1급</option>
+              <option value="2">2급</option>
+              <option value="3">3급</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label>공통 정답 수 (0~60)</label>
+          <div class="input-group">
+            <span class="icon">📘</span>
+            <input type="number" id="common" min="0" max="60" value="0">
+          </div>
+        </div>
+
+        <div>
+          <label>전공 정답 수 (0~40)</label>
+          <div class="input-group">
+            <span class="icon">🎭</span>
+            <input type="number" id="major" min="0" max="40" value="0">
+          </div>
+        </div>
+
+        <div>
+          <button id="calcBtn">점수 계산</button>
+        </div>
+      </div>
+
+      <div class="result" id="resultBox">
+        <h2>결과</h2>
+        <p id="summary">아래 버튼을 눌러 점수를 계산하세요.</p>
+        <p>
+          <strong>총점:</strong> 
+          <span class="score" id="totalScore">0</span> 
+          <span class="badge" id="statusBadge">-</span>
+          <span class="badge" id="gradeBadge">-</span>
+        </p>
+        <p>
+          <strong>공통 점수:</strong> 
+          <span id="commonScore">0</span> / <span id="commonMax">0</span> 
+          (과락: <span id="commonFail">0</span>)
+        </p>
+        <p>
+          <strong>전공 점수:</strong> 
+          <span id="majorScore">0</span> / <span id="majorMax">0</span> 
+          (과락: <span id="majorFail">0</span>)
+        </p>
+      </div>
+    </div>
+  </div>
+
+<script>
+const gradeData = {
+  1: { commonRate: 1/3, commonMax: 20, commonFail: 8, majorRate: 2, majorMax: 80, majorFail: 32, label: "1급" },
+  2: { commonRate: 1/2, commonMax: 30, commonFail: 12, majorRate: 1.75, majorMax: 70, majorFail: 28, label: "2급" },
+  3: { commonRate: 2/3, commonMax: 40, commonFail: 16, majorRate: 1.5, majorMax: 60, majorFail: 24, label: "3급" },
+};
+
+function roundTo2(num) {
+  return Math.round(num * 100) / 100;
+}
+
+function calc() {
+  const grade = document.getElementById('grade').value;
+  const commonCorrect = Number(document.getElementById('common').value);
+  const majorCorrect = Number(document.getElementById('major').value);
+
+  const data = gradeData[grade];
+
+  const commonScore = roundTo2(commonCorrect * data.commonRate);
+  const majorScore = roundTo2(majorCorrect * data.majorRate);
+  const totalScore = roundTo2(commonScore + majorScore);
+
+  const isCommonFail = commonScore < data.commonFail;
+  const isMajorFail = majorScore < data.majorFail;
+  const isTotalPass = totalScore >= 60;
+
+  const isPass = isTotalPass && !isCommonFail && !isMajorFail;
+
+  document.getElementById('commonScore').innerText = commonScore.toFixed(2);
+  document.getElementById('majorScore').innerText = majorScore.toFixed(2);
+  document.getElementById('totalScore').innerText = totalScore.toFixed(2);
+
+  document.getElementById('commonMax').innerText = data.commonMax;
+  document.getElementById('majorMax').innerText = data.majorMax;
+  document.getElementById('commonFail').innerText = data.commonFail;
+  document.getElementById('majorFail').innerText = data.majorFail;
+
+  const summary = document.getElementById('summary');
+  if (isPass) {
+    summary.innerHTML = "축하합니다! <strong>합격</strong> 기준을 충족했습니다.";
+  } else {
+    if (!isTotalPass) summary.innerHTML = "<span class='warn'>총점이 60점 미만입니다.</span>";
+    else if (isCommonFail) summary.innerHTML = "<span class='warn'>공통 과락입니다.</span>";
+    else if (isMajorFail) summary.innerHTML = "<span class='warn'>전공 과락입니다.</span>";
+    else summary.innerHTML = "불합격입니다.";
+  }
+
+  const statusBadge = document.getElementById('statusBadge');
+  statusBadge.innerText = isPass ? "합격" : "불합격";
+  statusBadge.className = "badge " + (isPass ? "ok" : "fail");
+
+  const gradeBadge = document.getElementById('gradeBadge');
+  gradeBadge.innerText = data.label;
+}
+document.getElementById('calcBtn').addEventListener('click', calc);
+</script>
+</body>
+</html>
+
 
