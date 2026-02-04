@@ -6,53 +6,52 @@
 <title>무대예술전문인 자격검정 점수 계산기</title>
 <style>
   :root {
-    --bg: #0b1020;
-    --card: #111a33;
+    --card-bg: #111a33;
     --text: #e8ecff;
     --muted: #aab2d8;
     --accent: #7c5cff;
     --accent2: #22d3ee;
     --danger: #ff5c7a;
     --ok: #38ef7d;
-    --shadow: rgba(0,0,0,0.6);
   }
   * { box-sizing: border-box; }
   body {
     margin:0;
     font-family: "Apple SD Gothic Neo","Noto Sans KR", sans-serif;
-    background: radial-gradient(circle at 20% 20%, #1b2a6b, var(--bg) 60%);
     color: var(--text);
     display:flex;
     justify-content:center;
-    padding: 40px 20px;
+    padding: 20px;
+    background: transparent; /* 배경 제거 */
   }
   .wrap {
     width: 100%;
-    max-width: 720px;
+    max-width: 520px;
   }
   .card {
-    background: var(--card);
+    background: var(--card-bg);
     border-radius: 18px;
-    box-shadow: 0 10px 30px var(--shadow);
-    padding: 24px;
+    padding: 22px;
   }
   h1 {
     margin: 0 0 8px;
-    font-size: 22px;
+    font-size: 20px;
     letter-spacing: -0.3px;
   }
   .subtitle {
-    margin: 0 0 18px;
+    margin: 0 0 14px;
     color: var(--muted);
-    font-size: 14px;
+    font-size: 13px;
   }
+
+  /* 1열 레이아웃 */
   .row {
-    display:grid;
-    grid-template-columns: 1fr 1fr;
+    display:flex;
+    flex-direction: column;
     gap: 12px;
     margin-bottom: 14px;
   }
-  .row.full { grid-template-columns: 1fr; }
+
   label {
     display:block;
     font-size: 13px;
@@ -120,108 +119,5 @@
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>무대예술전문인 자격검정 점수 계산기</h1>
-      <p class="subtitle">등급 선택 후 공통/전공 정답 수를 입력하면 합격 여부를 자동 계산합니다.</p>
+  <div class="wr
 
-      <div class="row">
-        <div>
-          <label>등급</label>
-          <select id="grade">
-            <option value="1">1급</option>
-            <option value="2">2급</option>
-            <option value="3">3급</option>
-          </select>
-        </div>
-        <div>
-          <label>공통 정답 수 (0~60)</label>
-          <input type="number" id="common" min="0" max="60" value="0">
-        </div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label>전공 정답 수 (0~40)</label>
-          <input type="number" id="major" min="0" max="40" value="0">
-        </div>
-        <div>
-          <label>계산</label>
-          <button id="calcBtn">점수 계산</button>
-        </div>
-      </div>
-
-      <div class="result" id="resultBox">
-        <h2>결과</h2>
-        <p id="summary">아래 버튼을 눌러 점수를 계산하세요.</p>
-        <p>
-          <strong>총점:</strong> 
-          <span class="score" id="totalScore">0</span> 
-          <span class="badge" id="statusBadge">-</span>
-          <span class="badge" id="gradeBadge">-</span>
-        </p>
-        <p><strong>공통 점수:</strong> <span id="commonScore">0</span> / <span id="commonMax">0</span> (과락: <span id="commonFail">0</span>)</p>
-        <p><strong>전공 점수:</strong> <span id="majorScore">0</span> / <span id="majorMax">0</span> (과락: <span id="majorFail">0</span>)</p>
-      </div>
-    </div>
-  </div>
-
-<script>
-const gradeData = {
-  1: { commonRate: 1/3, commonMax: 20, commonFail: 8, majorRate: 2, majorMax: 80, majorFail: 32, label: "1급" },
-  2: { commonRate: 1/2, commonMax: 30, commonFail: 12, majorRate: 1.75, majorMax: 70, majorFail: 28, label: "2급" },
-  3: { commonRate: 2/3, commonMax: 40, commonFail: 16, majorRate: 1.5, majorMax: 60, majorFail: 24, label: "3급" },
-};
-
-function roundTo2(num) {
-  // 소수점 3째 자리에서 반올림하여 2자리까지 표시
-  return Math.round(num * 100) / 100;
-}
-
-function calc() {
-  const grade = document.getElementById('grade').value;
-  const commonCorrect = Number(document.getElementById('common').value);
-  const majorCorrect = Number(document.getElementById('major').value);
-
-  const data = gradeData[grade];
-
-  const commonScore = roundTo2(commonCorrect * data.commonRate);
-  const majorScore = roundTo2(majorCorrect * data.majorRate);
-  const totalScore = roundTo2(commonScore + majorScore);
-
-  const isCommonFail = commonScore < data.commonFail;
-  const isMajorFail = majorScore < data.majorFail;
-  const isTotalPass = totalScore >= 60;
-
-  const isPass = isTotalPass && !isCommonFail && !isMajorFail;
-
-  document.getElementById('commonScore').innerText = commonScore.toFixed(2);
-  document.getElementById('majorScore').innerText = majorScore.toFixed(2);
-  document.getElementById('totalScore').innerText = totalScore.toFixed(2);
-
-  document.getElementById('commonMax').innerText = data.commonMax;
-  document.getElementById('majorMax').innerText = data.majorMax;
-  document.getElementById('commonFail').innerText = data.commonFail;
-  document.getElementById('majorFail').innerText = data.majorFail;
-
-  const summary = document.getElementById('summary');
-  if (isPass) {
-    summary.innerText = "축하합니다! 합격 기준을 충족했습니다.";
-  } else {
-    if (!isTotalPass) summary.innerText = "총점이 60점 미만입니다.";
-    else if (isCommonFail) summary.innerText = "공통 과락입니다.";
-    else if (isMajorFail) summary.innerText = "전공 과락입니다.";
-    else summary.innerText = "불합격입니다.";
-  }
-
-  const statusBadge = document.getElementById('statusBadge');
-  statusBadge.innerText = isPass ? "합격" : "불합격";
-  statusBadge.className = "badge " + (isPass ? "ok" : "fail");
-
-  const gradeBadge = document.getElementById('gradeBadge');
-  gradeBadge.innerText = data.label;
-}
-document.getElementById('calcBtn').addEventListener('click', calc);
-</script>
-</body>
-</html>
