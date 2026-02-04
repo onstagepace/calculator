@@ -14,8 +14,9 @@
     --danger: #ef4444;
     --border: #e5e7eb;
     --shadow: 0 10px 24px rgba(0,0,0,0.12);
-    --pink: #ffd7e8; /* 우유핑크 */
-    --burgundy: #6b0b1c; /* 버건디 */
+
+    --pinkOk: #FFA7A7;   /* 축하합니다 */
+    --pinkBad: #FF7171;  /* 총점미달/과락/불합격 */
   }
 
   * { box-sizing: border-box; }
@@ -25,7 +26,7 @@
     color: var(--text);
     display:flex;
     justify-content:center;
-    padding: 80px 20px 20px 20px;
+    padding: 60px 20px 20px 20px;
     background: transparent;
   }
 
@@ -46,12 +47,6 @@
     margin: 0 0 8px;
     font-size: 20px;
     letter-spacing: -0.3px;
-  }
-
-  @media (max-width: 600px) {
-    h1 {
-      font-size: 18px;
-    }
   }
 
   .subtitle {
@@ -140,14 +135,14 @@
   .result p {
     margin: 6px 0;
     font-size: 15px;
-    font-weight: 400; /* 공통/전공 점수 진하게 하지 않음 */
+    font-weight: 400;
   }
 
   .score {
     font-size: 30px;
     font-weight: 900;
     margin: 0;
-    color: #ffd7e8; /* 총점 우유핑크 */
+    color: #ffffff; /* 총점 숫자 흰색 */
   }
 
   .badge {
@@ -163,14 +158,14 @@
   .badge.ok { color: var(--ok); border-color: rgba(22,163,74,0.35); }
   .badge.fail { color: var(--danger); border-color: rgba(239,68,68,0.35); }
 
-  .warn {
-    color: #ef4444;
-    font-weight: 700;
+  .pinkOk {
+    color: var(--pinkOk);
+    font-weight: 900;
   }
 
-  .pinkText {
-    color: #ffd7e8;
-    font-weight: 900;
+  .pinkBad {
+    color: var(--pinkBad);
+    font-weight: 700;
   }
 
   .gradeLine {
@@ -192,10 +187,11 @@
     margin-top: 14px;
     font-size: 13px;
     font-weight: 700;
-    color: var(--burgundy); /* 버건디 */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #000000; /* 검정 글씨 */
+    background: #ffffff; /* 흰색 박스 */
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
   }
 </style>
 </head>
@@ -206,7 +202,7 @@
       <p class="subtitle">
         그동안 수고 많이 하셨습니다.<br>
         등급을 선택하고 과목별 정답 수를 입력 후<br>
-        결과 확인을 눌러 합격 여부를 확인해 보세요.
+        결과확인을 눌러 합격 여부를 확인해보세요.
       </p>
 
       <div class="row">
@@ -287,7 +283,7 @@ function validateInputs() {
   const isMajorValid = !isNaN(majorCorrect) && majorCorrect >= 0 && majorCorrect <= 40;
 
   if (!isCommonValid || !isMajorValid) {
-    summary.innerHTML = "<span class='warn'>입력값이 범위를 벗어났거나 비어 있습니다.</span>";
+    summary.innerHTML = "<span class='pinkBad'>입력값이 범위를 벗어났거나 비어 있습니다.</span>";
     calcBtn.disabled = true;
     document.getElementById('resultBox').classList.remove('result--active');
     return false;
@@ -327,21 +323,22 @@ function calc() {
   document.getElementById('majorFail').innerText = data.majorFail;
 
   if (isPass) {
-    summary.innerHTML = "<span class='pinkText'>축하합니다!</span>";
+    summary.innerHTML = "<span class='pinkOk'>축하합니다!</span>";
     passBadge.innerText = "합격";
     passBadge.className = "badge ok";
   } else {
-    if (isCommonFail || isMajorFail) {
-      passBadge.innerText = "과락";
-    } else {
-      passBadge.innerText = "불합격";
-    }
     passBadge.className = "badge fail";
 
-    if (!isTotalPass) summary.innerHTML = "<span class='warn'>총점이 60점 미만입니다.</span>";
-    else if (isCommonFail) summary.innerHTML = "<span class='pinkText'>공통 과락입니다.</span>";
-    else if (isMajorFail) summary.innerHTML = "<span class='warn'>전공 과락입니다.</span>";
-    else summary.innerHTML = "불합격입니다.";
+    if (isCommonFail) {
+      summary.innerHTML = "<span class='pinkBad'>공통과목 과락입니다.</span>";
+    } else if (isMajorFail) {
+      summary.innerHTML = "<span class='pinkBad'>전공과목 과락입니다.</span>";
+    } else if (!isTotalPass) {
+      summary.innerHTML = "<span class='pinkBad'>총점이 60점 미만입니다.</span>";
+    } else {
+      summary.innerHTML = "<span class='pinkBad'>불합격입니다.</span>";
+      passBadge.innerText = "불합격";
+    }
   }
 
   const gradeBadge = document.getElementById('gradeBadge');
@@ -358,3 +355,4 @@ validateInputs();
 </script>
 </body>
 </html>
+
