@@ -14,6 +14,7 @@
     --danger: #ef4444;
     --border: #e5e7eb;
     --shadow: 0 10px 24px rgba(0,0,0,0.12);
+    --pink: #ff4da6; /* 분홍색 */
   }
 
   * { box-sizing: border-box; }
@@ -28,7 +29,7 @@
   }
 
   .wrap {
-    width: min(520px, 90vw); /* 반응형: 화면 크기에 따라 자동 조절 */
+    width: min(450px, 80vw);
     margin: 0 auto;
   }
 
@@ -50,6 +51,7 @@
     margin: 0 0 14px;
     color: var(--muted);
     font-size: 13px;
+    line-height: 1.5;
   }
 
   .row {
@@ -90,14 +92,14 @@
     border: none;
     border-radius: 12px;
     color: #fff;
-    background: rgba(0, 0, 0, 0.6); /* 투명도 있는 검정 */
+    background: rgba(0, 0, 0, 0.6);
     font-weight: 700;
     cursor:pointer;
     transition: transform .15s ease, background .15s ease;
   }
 
   button:hover {
-    background: rgba(0, 0, 0, 0.8); /* 오버 시 더 진하게 */
+    background: rgba(0, 0, 0, 0.8);
   }
 
   button:disabled {
@@ -109,6 +111,14 @@
     margin-top: 16px;
     padding: 16px;
     border-radius: 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    color: #000;
+    display: none; /* 기본 숨김 */
+  }
+
+  .result.result--active {
+    display: block;
     background: rgba(0, 0, 0, 0.55);
     border: 1px solid rgba(255,255,255,0.12);
     color: #fff;
@@ -122,7 +132,6 @@
 
   .result p {
     margin: 6px 0;
-    color: #fff;
     font-size: 15px;
     font-weight: 700;
   }
@@ -131,7 +140,6 @@
     font-size: 30px;
     font-weight: 900;
     margin: 0;
-    color: #fff;
   }
 
   .badge {
@@ -148,7 +156,7 @@
   .badge.fail { color: var(--danger); border-color: rgba(239,68,68,0.35); }
 
   .warn {
-    color: #ffd2d2;
+    color: #ff4da6;
     font-weight: 700;
   }
 
@@ -157,7 +165,33 @@
     padding-top: 12px;
     border-top: 1px solid rgba(255,255,255,0.12);
     color: #e5e7eb;
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .passLine {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 900;
+  }
+  .passBadge {
+    display:inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 900;
+    color: #fff;
+    margin-left: 10px;
+  }
+  .passBadge.ok { background: var(--ok); }
+  .passBadge.fail { background: var(--danger); }
+
+  /* 하단 경고 문구 */
+  .note {
+    margin-top: 14px;
     font-size: 13px;
+    color: #ff4da6;
+    font-weight: 700;
   }
 </style>
 </head>
@@ -165,7 +199,10 @@
   <div class="wrap">
     <div class="card">
       <h1>무대예술전문인 자격검정 점수 계산기</h1>
-      <p class="subtitle">등급 선택 후 공통/전공 정답 수를 입력하면 합격 여부를 자동 계산합니다.</p>
+      <p class="subtitle">
+        등급을 선택하고 과목별 정답 수를 입력 후<br>
+        결과확인을 눌러 합격 여부를 확인합니다.
+      </p>
 
       <div class="row">
         <div>
@@ -188,7 +225,7 @@
         </div>
 
         <div>
-          <button id="calcBtn" disabled>점수 계산</button>
+          <button id="calcBtn" disabled>결과 확인</button>
         </div>
       </div>
 
@@ -208,6 +245,15 @@
         <div class="gradeLine">
           <strong>선택한 등급:</strong> <span id="gradeBadge">-</span>
         </div>
+
+        <div class="passLine">
+          합격 여부:
+          <span id="passBadge" class="passBadge">-</span>
+        </div>
+
+        <div class="note">
+          ⚠️ 본 계산 결과는 참고용이며, 공식 발표와 다를 수 있습니다.
+        </div>
       </div>
     </div>
   </div>
@@ -223,6 +269,7 @@ const calcBtn = document.getElementById('calcBtn');
 const commonInput = document.getElementById('common');
 const majorInput = document.getElementById('major');
 const summary = document.getElementById('summary');
+const passBadge = document.getElementById('passBadge');
 
 function roundTo2(num) {
   return Math.round(num * 100) / 100;
@@ -238,23 +285,21 @@ function validateInputs() {
   if (!isCommonValid || !isMajorValid) {
     summary.innerHTML = "<span class='warn'>입력값이 범위를 벗어났습니다. 다시 입력해주세요.</span>";
     calcBtn.disabled = true;
+    passBadge.innerText = "-";
+    passBadge.className = "passBadge";
+    document.getElementById('resultBox').classList.remove('result--active');
     return false;
   }
 
-  summary.innerHTML = "입력값이 정상입니다. 계산 버튼을 눌러주세요.";
   calcBtn.disabled = false;
   return true;
 }
 
-commonInput.addEventListener('input', validateInputs);
-majorInput.addEventListener('input', validateInputs);
-document.getElementById('grade').addEventListener('change', validateInputs);
-
-// 초기 상태 검증
-validateInputs();
-
 function calc() {
   if (!validateInputs()) return;
+
+  // 결과창 활성화
+  document.getElementById('resultBox').classList.add('result--active');
 
   const grade = document.getElementById('grade').value;
   const commonCorrect = Number(commonInput.value);
@@ -282,11 +327,16 @@ function calc() {
 
   if (isPass) {
     summary.innerHTML = "축하합니다! <strong>합격</strong> 기준을 충족했습니다.";
+    passBadge.innerText = "합격";
+    passBadge.className = "passBadge ok";
   } else {
     if (!isTotalPass) summary.innerHTML = "<span class='warn'>총점이 60점 미만입니다.</span>";
     else if (isCommonFail) summary.innerHTML = "<span class='warn'>공통 과락입니다.</span>";
     else if (isMajorFail) summary.innerHTML = "<span class='warn'>전공 과락입니다.</span>";
     else summary.innerHTML = "불합격입니다.";
+
+    passBadge.innerText = "불합격";
+    passBadge.className = "passBadge fail";
   }
 
   const statusBadge = document.getElementById('statusBadge');
@@ -297,8 +347,16 @@ function calc() {
   gradeBadge.innerText = data.label;
 }
 
+commonInput.addEventListener('input', validateInputs);
+majorInput.addEventListener('input', validateInputs);
+document.getElementById('grade').addEventListener('change', validateInputs);
+
 calcBtn.addEventListener('click', calc);
+
+// 초기 상태
+validateInputs();
 </script>
 </body>
 </html>
+
 
