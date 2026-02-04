@@ -121,7 +121,7 @@
 
   .result.result--active {
     display: block;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(0, 0, 0, 0.25); /* 연하게 + 가독성 유지 */
     border: 1px solid rgba(255,255,255,0.12);
     color: #fff;
   }
@@ -328,6 +328,7 @@ function calc() {
     passBadge.className = "badge ok";
   } else {
     passBadge.className = "badge fail";
+    passBadge.innerText = "불합격";
 
     if (isCommonFail) {
       summary.innerHTML = "<span class='pinkBad'>공통과목 과락입니다.</span>";
@@ -337,7 +338,6 @@ function calc() {
       summary.innerHTML = "<span class='pinkBad'>총점이 60점 미만입니다.</span>";
     } else {
       summary.innerHTML = "<span class='pinkBad'>불합격입니다.</span>";
-      passBadge.innerText = "불합격";
     }
   }
 
@@ -355,4 +355,3 @@ validateInputs();
 </script>
 </body>
 </html>
-
