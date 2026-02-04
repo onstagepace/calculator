@@ -15,8 +15,8 @@
     --border: #e5e7eb;
     --shadow: 0 10px 24px rgba(0,0,0,0.12);
 
-    --pinkOk: #FFA7A7;   /* 축하합니다 */
-    --pinkBad: #FF7171;  /* 총점미달/과락/불합격 */
+    --pinkOk: #FFA7A7;
+    --pinkBad: #FF7171;
   }
 
   * { box-sizing: border-box; }
@@ -90,20 +90,21 @@
     box-shadow: 0 0 0 3px rgba(79,70,229,0.18);
   }
 
+  /* 1) 버튼 색을 결과창 색으로 변경 */
   button {
     width:100%;
     padding: 12px;
     border: none;
     border-radius: 12px;
     color: #fff;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.7); /* 결과창 색 */
     font-weight: 700;
     cursor:pointer;
     transition: transform .15s ease, background .15s ease;
   }
 
   button:hover {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
   }
 
   button:disabled {
@@ -118,12 +119,13 @@
     background: #fff;
     border: 1px solid var(--border);
     color: #000;
-    display: none; /* 기본 숨김 */
+    display: none;
   }
 
+  /* 2) 결과창 배경을 버튼 색으로 변경 */
   .result.result--active {
     display: block;
-    background: rgba(0, 0, 0, 0.7); /* 더 어둡게 */
+    background: rgba(0, 0, 0, 0.6); /* 버튼 기본색 */
     border: 1px solid rgba(255,255,255,0.12);
     color: #fff;
   }
@@ -144,7 +146,7 @@
     font-size: 30px;
     font-weight: 700;
     margin: 0;
-    color: #ffffff; /* 총점 숫자 흰색 */
+    color: #ffffff;
   }
 
   .badge {
@@ -357,4 +359,5 @@ validateInputs();
 </script>
 </body>
 </html>
+
 
