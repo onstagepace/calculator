@@ -77,6 +77,7 @@ button:disabled{background:rgba(0,0,0,0.3);cursor:not-allowed}
 .line{
   padding:6px 8px;
   border-radius:8px;
+  margin-bottom:6px; /* 줄 간격 좁힘 */
 }
 .line.fail{
   background:rgba(239,68,68,.2);
@@ -94,7 +95,7 @@ button:disabled{background:rgba(0,0,0,0.3);cursor:not-allowed}
 .badge.fail{color:var(--danger)}
 
 .guide{
-  margin-bottom:10px;
+  margin-bottom:8px;
   font-size:14px;
   font-weight:700;
 }
@@ -106,13 +107,16 @@ button:disabled{background:rgba(0,0,0,0.3);cursor:not-allowed}
   background:#fff;
   color:#000;
   font-size:13px;
+  white-space: nowrap;      /* 모바일에서도 한 줄 유지 */
+  overflow-x: auto;         /* 화면 좁으면 가로 스크롤 */
 }
+
 .makeby{
   text-align:right;
   font-size:13px;
   color:#6b7280;
   margin-top:10px;
-  white-space: nowrap; /* 모바일에서 줄바꿈 방지 */
+  white-space: nowrap;      /* 모바일에서 줄바꿈 방지 */
 }
 </style>
 </head>
@@ -177,14 +181,12 @@ const gradeData={
 const $=id=>document.getElementById(id);
 function round2(num){ return Math.round(num*100)/100; }
 
-// 입력값 검증
 function validateInputs(){
   const c=+$('common').value;
   const m=+$('major').value;
   return !isNaN(c)&&!isNaN(m)&&c>=0&&c<=60&&m>=0&&m<=40;
 }
 
-// 계산
 function calc(){
   if(!validateInputs()) return;
 
@@ -226,12 +228,10 @@ function calc(){
   $('resultBox').classList.add('active');
 }
 
-// 버튼 활성화/비활성화
 function checkBtn(){
   $('calcBtn').disabled = !validateInputs();
 }
 
-// 이벤트
 ['common','major','grade'].forEach(id=>$(id).addEventListener('input', checkBtn));
 $('calcBtn').addEventListener('click', calc);
 
