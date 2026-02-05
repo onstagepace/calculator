@@ -4,360 +4,60 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>무대예술전문인 자격검정 점수 계산기</title>
+
 <style>
-  :root {
-    --card-bg: #ffffff;
-    --text: #1b1b1b;
-    --muted: #6b7280;
-    --accent: #4f46e5;
-    --ok: #16a34a;
-    --danger: #ef4444;
-    --border: #e5e7eb;
-    --shadow: 0 10px 24px rgba(0,0,0,0.12);
-
-    --pinkOk: #FFA7A7;
-    --pinkBad: #FF7171;
-  }
-
-  * { box-sizing: border-box; }
-  body {
-    margin:0;
-    font-family: "Apple SD Gothic Neo","Noto Sans KR", sans-serif;
-    color: var(--text);
-    display:flex;
-    justify-content:center;
-    padding: 60px 20px 20px 20px;
-    background: transparent;
-  }
-
-  .wrap {
-    width: min(450px, 80vw);
-    margin: 0 auto;
-  }
-
-  .card {
-    background: var(--card-bg);
-    border-radius: 18px;
-    padding: 22px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-  }
-
-  h1 {
-    margin: 0 0 8px;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-  }
-
-  .subtitle {
-    margin: 0 0 14px;
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.5;
-    font-weight: 500;
-  }
-
-  .row {
-    display:flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-
-  label {
-    display:block;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  input, select {
-    width:100%;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: #f9fafb;
-    color: var(--text);
-    outline:none;
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  input:focus, select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(79,70,229,0.18);
-  }
-
-  /* 1) 버튼 색을 결과창 색으로 변경 */
-  button {
-    width:100%;
-    padding: 12px;
-    border: none;
-    border-radius: 12px;
-    color: #fff;
-    background: rgba(0, 0, 0, 0.7); /* 결과창 색 */
-    font-weight: 700;
-    cursor:pointer;
-    transition: transform .15s ease, background .15s ease;
-  }
-
-  button:hover {
-    background: rgba(0, 0, 0, 0.9);
-  }
-
-  button:disabled {
-    background: rgba(0, 0, 0, 0.3);
-    cursor: not-allowed;
-  }
-
-  .result {
-    margin-top: 16px;
-    padding: 16px;
-    border-radius: 14px;
-    background: #fff;
-    border: 1px solid var(--border);
-    color: #000;
-    display: none;
-  }
-
-  /* 2) 결과창 배경을 버튼 색으로 변경 */
-  .result.result--active {
-    display: block;
-    background: rgba(0, 0, 0, 0.6); /* 버튼 기본색 */
-    border: 1px solid rgba(255,255,255,0.12);
-    color: #fff;
-  }
-
-  .result h2 {
-    margin:0 0 8px;
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .result p {
-    margin: 6px 0;
-    font-size: 15px;
-    font-weight: 500;
-  }
-
-  .score {
-    font-size: 30px;
-    font-weight: 700;
-    margin: 0;
-    color: #ffffff;
-  }
-
-  .badge {
-    display:inline-block;
-    margin-left: 8px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    background: #fff;
-    border: 1px solid var(--border);
-  }
-  .badge.ok { color: var(--ok); border-color: rgba(22,163,74,0.35); }
-  .badge.fail { color: var(--danger); border-color: rgba(239,68,68,0.35); }
-
-  .pinkOk {
-    color: var(--pinkOk);
-    font-weight: 700;
-  }
-
-  .pinkBad {
-    color: var(--pinkBad);
-    font-weight: 600;
-  }
-
-  .gradeLine {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255,255,255,0.12);
-    color: #e5e7eb;
-    font-size: 15px;
-    font-weight: 700;
-  }
-
-  .passLine {
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 700;
-  }
-
-  .note {
-    margin-top: 14px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #000000;
-    background: #ffffff;
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-  }
-</style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <h1>무대예술전문인 자격검정 점수 계산기</h1>
-      <p class="subtitle">
-        그동안 수고 많이 하셨습니다.<br>
-        등급을 선택하고 과목별 정답 수를 입력 후<br>
-        결과확인을 눌러 합격 여부를 확인해보세요.
-      </p>
-
-      <div class="row">
-        <div>
-          <label>등급</label>
-          <select id="grade">
-            <option value="1">1급</option>
-            <option value="2">2급</option>
-            <option value="3">3급</option>
-          </select>
-        </div>
-
-        <div>
-          <label>공통과목 정답 수 (0~60)</label>
-          <input type="number" id="common" min="0" max="60" value="0">
-        </div>
-
-        <div>
-          <label>전공과목 정답 수 (0~40)</label>
-          <input type="number" id="major" min="0" max="40" value="0">
-        </div>
-
-        <div>
-          <button id="calcBtn" disabled>결과 확인</button>
-        </div>
-      </div>
-
-      <div class="result" id="resultBox">
-        <h2>결과</h2>
-        <p id="summary">입력값을 확인해주세요.</p>
-
-        <p>
-          <strong>총점:</strong> 
-          <span class="score" id="totalScore">0</span>
-        </p>
-
-        <p><strong>공통 점수:</strong> <span id="commonScore">0</span> / <span id="commonMax">0</span> (과락: <span id="commonFail">0</span>)</p>
-        <p><strong>전공 점수:</strong> <span id="majorScore">0</span> / <span id="majorMax">0</span> (과락: <span id="majorFail">0</span>)</p>
-
-        <div class="gradeLine">
-          <strong>선택한 등급:</strong> <span id="gradeBadge">-</span>
-        </div>
-
-        <div class="passLine">
-          합격 여부:
-          <span id="passBadge" class="badge">-</span>
-        </div>
-
-        <div class="note">
-          ⚠️ 본 계산 결과는 참고용이며, 공식 발표와 다를 수 있습니다.
-        </div>
-      </div>
-    </div>
-  </div>
-
-<script>
-const gradeData = {
-  1: { commonRate: 1/3, commonMax: 20, commonFail: 8, majorRate: 2, majorMax: 80, majorFail: 32, label: "1급" },
-  2: { commonRate: 1/2, commonMax: 30, commonFail: 12, majorRate: 1.75, majorMax: 70, majorFail: 28, label: "2급" },
-  3: { commonRate: 2/3, commonMax: 40, commonFail: 16, majorRate: 1.5, majorMax: 60, majorFail: 24, label: "3급" },
-};
-
-const calcBtn = document.getElementById('calcBtn');
-const commonInput = document.getElementById('common');
-const majorInput = document.getElementById('major');
-const summary = document.getElementById('summary');
-const passBadge = document.getElementById('passBadge');
-
-function roundTo2(num) {
-  return Math.round(num * 100) / 100;
+:root {
+  --border:#e5e7eb;
+  --shadow:0 10px 24px rgba(0,0,0,.12);
+  --ok:#16a34a;
+  --danger:#ef4444;
+  --pinkOk:#FFA7A7;
+  --pinkBad:#FF7171;
 }
 
-function validateInputs() {
-  const commonCorrect = Number(commonInput.value);
-  const majorCorrect = Number(majorInput.value);
-
-  const isCommonValid = !isNaN(commonCorrect) && commonCorrect >= 0 && commonCorrect <= 60;
-  const isMajorValid = !isNaN(majorCorrect) && majorCorrect >= 0 && majorCorrect <= 40;
-
-  if (!isCommonValid || !isMajorValid) {
-    summary.innerHTML = "<span class='pinkBad'>입력값이 범위를 벗어났거나 비어 있습니다.</span>";
-    calcBtn.disabled = true;
-    document.getElementById('resultBox').classList.remove('result--active');
-    return false;
-  }
-
-  calcBtn.disabled = false;
-  return true;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  padding:60px 20px 20px;
+  font-family:"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  display:flex;
+  justify-content:center;
 }
-
-function calc() {
-  if (!validateInputs()) return;
-
-  document.getElementById('resultBox').classList.add('result--active');
-
-  const grade = document.getElementById('grade').value;
-  const commonCorrect = Number(commonInput.value);
-  const majorCorrect = Number(majorInput.value);
-  const data = gradeData[grade];
-
-  const commonScore = roundTo2(commonCorrect * data.commonRate);
-  const majorScore = roundTo2(majorCorrect * data.majorRate);
-  const totalScore = roundTo2(commonScore + majorScore);
-
-  const isCommonFail = commonScore < data.commonFail;
-  const isMajorFail = majorScore < data.majorFail;
-  const isTotalPass = totalScore >= 60;
-
-  const isPass = isTotalPass && !isCommonFail && !isMajorFail;
-
-  document.getElementById('commonScore').innerText = commonScore.toFixed(2);
-  document.getElementById('majorScore').innerText = majorScore.toFixed(2);
-  document.getElementById('totalScore').innerText = totalScore.toFixed(2);
-
-  document.getElementById('commonMax').innerText = data.commonMax;
-  document.getElementById('majorMax').innerText = data.majorMax;
-  document.getElementById('commonFail').innerText = data.commonFail;
-  document.getElementById('majorFail').innerText = data.majorFail;
-
-  if (isPass) {
-    summary.innerHTML = "<span class='pinkOk'>축하합니다!</span>";
-    passBadge.innerText = "합격";
-    passBadge.className = "badge ok";
-  } else {
-    passBadge.className = "badge fail";
-    passBadge.innerText = "불합격";
-
-    if (isCommonFail) {
-      summary.innerHTML = "<span class='pinkBad'>공통과목 과락입니다.</span>";
-    } else if (isMajorFail) {
-      summary.innerHTML = "<span class='pinkBad'>전공과목 과락입니다.</span>";
-    } else if (!isTotalPass) {
-      summary.innerHTML = "<span class='pinkBad'>총점이 60점 미만입니다.</span>";
-    } else {
-      summary.innerHTML = "<span class='pinkBad'>불합격입니다.</span>";
-    }
-  }
-
-  const gradeBadge = document.getElementById('gradeBadge');
-  gradeBadge.innerText = data.label;
+.wrap{width:min(450px,80vw)}
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
 }
+h1{margin:0 0 8px;font-size:20px}
+.subtitle{font-size:13px;color:#6b7280;margin-bottom:14px}
+.row{display:flex;flex-direction:column;gap:12px}
 
-commonInput.addEventListener('input', validateInputs);
-majorInput.addEventListener('input', validateInputs);
-document.getElementById('grade').addEventListener('change', validateInputs);
+label{font-weight:700;font-size:14px;color:#6b7280}
+input,select{
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#f9fafb;
+  font-size:16px;
+}
+button{
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:rgba(0,0,0,.7);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+}
+button:disabled{opacity:.4;cursor:not-allowed}
 
-calcBtn.addEventListener('click', calc);
+.result{
+  display:none;
+  margin-top:16px;
+  padding:16px;
+  border-radiu
 
-validateInputs();
-</script>
-</body>
-</html>
-
-
+  
