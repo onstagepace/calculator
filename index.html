@@ -75,9 +75,9 @@ button:disabled{background:rgba(0,0,0,0.3);cursor:not-allowed}
 .score{font-size:28px;font-weight:700}
 
 .line{
-  padding:6px 8px;
+  padding:4px 8px;       /* padding 줄임 */
   border-radius:8px;
-  margin-bottom:6px; /* 줄 간격 좁힘 */
+  margin-bottom:2px;     /* 줄 간격 좁힘 */
 }
 .line.fail{
   background:rgba(239,68,68,.2);
@@ -107,7 +107,10 @@ button:disabled{background:rgba(0,0,0,0.3);cursor:not-allowed}
   background:#fff;
   color:#000;
   font-size:13px;
-  white-space: nowrap;      /* 모바일에서도 한 줄 유지 */
+
+  display: flex;           /* 중앙 정렬 */
+  justify-content: center;  /* 가로 중앙 */
+  white-space: nowrap;      /* 한 줄 유지 */
   overflow-x: auto;         /* 화면 좁으면 가로 스크롤 */
 }
 
