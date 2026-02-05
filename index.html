@@ -4,7 +4,124 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>무대예술전문인 자격검정 점수 계산기</title>
-<link rel="stylesheet" href="style.css">
+<style>
+:root {
+  --border:#e5e7eb;
+  --shadow:0 10px 24px rgba(0,0,0,.12);
+  --ok:#16a34a;
+  --danger:#ef4444;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  padding:60px 20px;
+  font-family:"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  background:#f3f4f6;
+  display:flex;
+  justify-content:center;
+}
+.wrap{width:min(420px,100%)}
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:22px;
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+
+h1{margin:0 0 8px;font-size:20px}
+.subtitle{font-size:13px;color:#6b7280;margin-bottom:14px}
+
+label{display:block;margin-top:12px;margin-bottom:6px;font-weight:700;color:#6b7280}
+input,select{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#f9fafb;
+  font-size:16px;
+}
+input:focus, select:focus {
+  border-color:#4f46e5;
+  box-shadow:0 0 0 3px rgba(79,70,229,0.18);
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  color:#fff;
+  background:rgba(0,0,0,0.7);
+  font-weight:700;
+  cursor:pointer;
+  transition:transform .15s ease, background .15s ease;
+  margin-top:14px;
+}
+button:hover{background:rgba(0,0,0,0.9)}
+button:disabled{background:rgba(0,0,0,0.3);cursor:not-allowed}
+
+.result{
+  display:none;
+  margin-top:18px;
+  padding:16px;
+  border-radius:14px;
+  background:rgba(0,0,0,.65);
+  color:#fff;
+}
+.result.active{display:block}
+
+.score{font-size:28px;font-weight:700}
+
+.line{
+  padding:4px 8px;       /* padding 줄임 */
+  border-radius:8px;
+  margin-bottom:2px;     /* 줄 간격 좁힘 */
+}
+.line.fail{
+  background:rgba(239,68,68,.2);
+}
+
+.badge{
+  margin-left:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  background:#fff;
+}
+.badge.ok{color:var(--ok)}
+.badge.fail{color:var(--danger)}
+
+.guide{
+  margin-bottom:8px;
+  font-size:14px;
+  font-weight:700;
+}
+
+.note{
+  margin-top:12px;
+  padding:10px;
+  border-radius:12px;
+  background:#fff;
+  color:#000;
+  font-size:13px;
+
+  display: flex;           /* 중앙 정렬 */
+  justify-content: center;  /* 가로 중앙 */
+  white-space: nowrap;      /* 한 줄 유지 */
+  overflow-x: auto;         /* 화면 좁으면 가로 스크롤 */
+}
+
+.makeby{
+  text-align:right;
+  font-size:13px;
+  color:#6b7280;
+  margin-top:10px;
+  white-space: nowrap;      /* 모바일에서 줄바꿈 방지 */
+}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -56,6 +173,78 @@
     <div class="makeby">On stage pace</div>
   </div>
 </div>
-<script src="script.js"></script>
+
+<script>
+const gradeData={
+  1:{cRate:1/3,cMax:20,cFail:8,mRate:2,mMax:80,mFail:32},
+  2:{cRate:1/2,cMax:30,cFail:12,mRate:1.75,mMax:70,mFail:28},
+  3:{cRate:2/3,cMax:40,cFail:16,mRate:1.5,mMax:60,mFail:24}
+};
+
+const $=id=>document.getElementById(id);
+function round2(num){ return Math.round(num*100)/100; }
+
+function validateInputs(){
+  const c=+$('common').value;
+  const m=+$('major').value;
+  return !isNaN(c)&&!isNaN(m)&&c>=0&&c<=60&&m>=0&&m<=40;
+}
+
+function calc(){
+  if(!validateInputs()) return;
+
+  const cNum=+$('common').value;
+  const mNum=+$('major').value;
+  const g=gradeData[$('grade').value];
+  const cScore=round2(cNum*g.cRate);
+  const mScore=round2(mNum*g.mRate);
+  const total=round2(cScore+mScore);
+
+  $('cScore').innerText=cScore;
+  $('mScore').innerText=mScore;
+  $('total').innerText=total;
+  $('cMax').innerText=g.cMax;
+  $('mMax').innerText=g.mMax;
+  $('cFail').innerText=g.cFail;
+  $('mFail').innerText=g.mFail;
+
+  const cFail=cScore<g.cFail;
+  const mFail=mScore<g.mFail;
+  const totalFail=total<60;
+
+  $('cLine').className='line'+(cFail?' fail':'');
+  $('mLine').className='line'+(mFail?' fail':'');
+
+  let guideMsg='';
+  if(cFail || mFail){
+    guideMsg=`과락입니다.`;
+  }else if(totalFail){
+    guideMsg=`합격까지 ${round2(60-total)}점 부족합니다.`;
+  }else{
+    guideMsg='🎉 축하합니다! 합격입니다.';
+  }
+  $('guide').innerText = guideMsg;
+
+  $('pass').innerText = (!cFail && !mFail && !totalFail)?'합격':'불합격';
+  $('pass').className='badge '+((!cFail && !mFail && !totalFail)?'ok':'fail');
+
+  $('resultBox').classList.add('active');
+}
+
+function checkBtn(){
+  $('calcBtn').disabled = !validateInputs();
+}
+
+['common','major','grade'].forEach(id=>$(id).addEventListener('input', checkBtn));
+$('calcBtn').addEventListener('click', calc);
+
+// 클릭 시 0 덮어쓰기
+['common','major'].forEach(id=>{
+  const el=$(id);
+  el.addEventListener('focus', ()=>{ if(el.value=="0") el.value=""; });
+});
+
+checkBtn();
+</script>
 </body>
 </html>
