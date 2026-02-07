@@ -175,9 +175,9 @@ button:disabled{background:rgba(0,0,0,0.3);cursor:not-allowed}
 
 <script>
 const gradeData = {
-  1: { cRate: 0.4, mRate: 3.2, cMax: 50*0.4, mMax: 25*3.2, cFail: 20, mFail: 32 },
-  2: { cRate: 0.6, mRate: 2.8, cMax: 50*0.6, mMax: 25*2.8, cFail: 30, mFail: 28 },
-  3: { cRate: 0.8, mRate: 2.4, cMax: 50*0.8, mMax: 25*2.4, cFail: 40, mFail: 24 }
+  1: { cRate: 0.4, mRate: 3.2, cMax: 50*0.4, mMax: 25*3.2 },
+  2: { cRate: 0.6, mRate: 2.8, cMax: 50*0.6, mMax: 25*2.8 },
+  3: { cRate: 0.8, mRate: 2.4, cMax: 50*0.8, mMax: 25*2.4 }
 };
 
 const $ = id => document.getElementById(id);
@@ -205,17 +205,21 @@ function calc(){
   $('total').innerText = total;
   $('cMax').innerText = round2(g.cMax);
   $('mMax').innerText = round2(g.mMax);
-  $('cFail').innerText = g.cFail;
-  $('mFail').innerText = g.mFail;
 
-  const cFail = cScore < g.cFail;
-  const mFail = mScore < g.mFail;
-  const totalFail = total < 60;
+  // 과락 40% 미만
+  const cFail = cScore < g.cMax * 0.4;
+  const mFail = mScore < g.mMax * 0.4;
+
+  $('cFail').innerText = round2(g.cMax * 0.4);
+  $('mFail').innerText = round2(g.mMax * 0.4);
 
   $('cLine').className = 'line' + (cFail ? ' fail' : '');
   $('mLine').className = 'line' + (mFail ? ' fail' : '');
 
+  const totalFail = total < 60;
+
   let guideMsg = '';
+  // 하나라도 과락이면 과락
   if(cFail || mFail){
     guideMsg = `과락입니다.`;
   } else if(totalFail){
@@ -223,10 +227,11 @@ function calc(){
   } else {
     guideMsg = '🎉 축하합니다! 합격입니다.';
   }
+
   $('guide').innerText = guideMsg;
 
-  $('pass').innerText = (!cFail && !mFail && !totalFail) ? '합격' : '불합격';
-  $('pass').className = 'badge ' + ((!cFail && !mFail && !totalFail) ? 'ok' : 'fail');
+  $('pass').innerText = ( !(cFail || mFail) && !totalFail ) ? '합격' : '불합격';
+  $('pass').className = 'badge ' + ( (!(cFail || mFail) && !totalFail) ? 'ok' : 'fail');
 
   $('resultBox').classList.add('active');
 }
@@ -235,9 +240,12 @@ function checkBtn(){
   $('calcBtn').disabled = !validateInputs();
 }
 
-['common','major','grade'].forEach(id => $(id).addEventListener('input', checkBtn));
+// 버튼 활성화 이벤트
+['common','major'].forEach(id => $(id).addEventListener('input', checkBtn));
+$('grade').addEventListener('change', checkBtn); // select는 change 이벤트 사용
 $('calcBtn').addEventListener('click', calc);
 
+// 0 클릭 시 초기화
 ['common','major'].forEach(id=>{
   const el=$(id);
   el.addEventListener('focus', ()=>{ if(el.value=="0") el.value=""; });
