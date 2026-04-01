@@ -120,6 +120,16 @@ button:disabled{background:rgba(0,0,0,0.3);cursor:not-allowed}
   margin-top:10px;
   white-space: nowrap;
 }
+.makeby a{
+  color:#6b7280;
+  text-decoration:none;
+  border-bottom:1px solid #d1d5db;
+  transition:color .15s ease, border-color .15s ease;
+}
+.makeby a:hover{
+  color:#4f46e5;
+  border-color:#4f46e5;
+}
 </style>
 </head>
 <body>
@@ -169,7 +179,7 @@ button:disabled{background:rgba(0,0,0,0.3);cursor:not-allowed}
       </div>
     </div>
 
-    <div class="makeby">Each One</div>
+    <div class="makeby"><a href="https://blog.naver.com/ambiguous_ending" target="_blank">Each One</a></div>
   </div>
 </div>
 
@@ -219,7 +229,6 @@ function calc(){
   const totalFail = total < 60;
 
   let guideMsg = '';
-  // 하나라도 과락이면 과락
   if(cFail || mFail){
     guideMsg = `과락입니다.`;
   } else if(totalFail){
@@ -240,12 +249,10 @@ function checkBtn(){
   $('calcBtn').disabled = !validateInputs();
 }
 
-// 버튼 활성화 이벤트
 ['common','major'].forEach(id => $(id).addEventListener('input', checkBtn));
-$('grade').addEventListener('change', checkBtn); // select는 change 이벤트 사용
+$('grade').addEventListener('change', checkBtn);
 $('calcBtn').addEventListener('click', calc);
 
-// 0 클릭 시 초기화
 ['common','major'].forEach(id=>{
   const el=$(id);
   el.addEventListener('focus', ()=>{ if(el.value=="0") el.value=""; });
